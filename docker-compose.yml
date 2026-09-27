@@ -1,0 +1,13 @@
+services:
+  openhands:
+    container_name: openhands
+    image: ghcr.io/openhands/agent-canvas:1.24.0
+    ports:
+      - "8000:8000"
+    volumes:
+      - ~/.openhands:/home/openhands/.openhands
+      - /opt/projects:/projects
+    stdin_open: true
+    tty: true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
