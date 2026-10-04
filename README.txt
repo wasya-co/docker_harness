@@ -1,37 +1,39 @@
 
+= Develop and Use =
 
-mkdir -p ~/projects ~/.openhands
-docker run -it --rm \
-  -p 8000:8000 \
-  -v ~/.openhands:/home/openhands/.openhands \
-  -v ~/projects:/projects \
-  ghcr.io/openhands/agent-canvas:latest
+  ollama pull qwen3-coder:30b
+  # ollama run qwen3-coder:30b
 
+  == use pi.dev sandbox ==
 
-services:
-  openhands:
-    image: ghcr.io/openhands/agent-canvas:latest
-    ports:
-      - "8000:8000"
-    volumes:
-      - ~/.openhands:/home/openhands/.openhands
-      - ~/projects:/projects
-    stdin_open: true
-    tty: true
+    From: https://pi.dev/docs/latest/containerization
 
-=== build the sandbox ===
-From: https://pi.dev/docs/latest/containerization
+    Uses Dockerfile.pi
 
-Uses Dockerfile.pi
+      docker build -t pi-sandbox -f Dockerfile.pi .
 
-  docker build -t pi-sandbox -f Dockerfile.pi .
+    Then start it:
 
-Then start it:
+      docker run --rm -it \
+        -v "$PWD:/workspace" \
+        -v pi-agent-home:/root/.pi/agent \
+        pi-sandbox
 
-  docker run --rm -it \
-    -e OPENAI_API_KEY \
-    -v "$PWD:/workspace" \
-    -v pi-agent-home:/root/.pi/agent \
-    pi-sandbox
+  == run a browser with pi.dev ==
+
+    alias brave='/Applications/Brave\ Browser.app/Contents/MacOS/Brave\ Browser'
+    brave --remote-debugging-port=9222 --user-data-dir="$HOME/.brave-debug"
+
+    pi mcp add chrome-devtools -- npx -y chrome-devtools-mcp@latest \
+      --no-usage-statistics --browserUrl=http://localhost:9222
+
+  == use cursor ==
 
 
+    docker build -f Dockerfile.cursor -t cursor-sandbox .
+
+    docker run --rm -it \
+      -e CURSOR_API_KEY="$CURSOR_API_KEY" \
+      -v "$PWD:/workspace" \
+      -w /workspace \
+      cursor-sandbox
